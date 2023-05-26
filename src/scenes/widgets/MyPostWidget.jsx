@@ -46,7 +46,7 @@ import {
         formData.append("picturePath", image.name);
       }
   
-      const response = await fetch(`https://hello-social-media-server-production.up.railway.app/posts`, {
+      const response = await fetch(`${process.env.REACT_APP_API}/posts`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

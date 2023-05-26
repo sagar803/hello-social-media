@@ -35,7 +35,7 @@ import {
     const primary = palette.primary.main;
   
     const patchLike = async () => {
-      const response = await fetch(`https://hello-social-media-server-production.up.railway.app/posts/${postId}/like`, {
+      const response = await fetch(`${process.env.REACT_APP_API}/posts/${postId}/like`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ import {
             height="auto"
             alt="post"
             style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-            src={`https://hello-social-media-server-production.up.railway.app/assets/${picturePath}`}
+            src={`${process.env.REACT_APP_API}/assets/${picturePath}`}
           />
         )}
         <FlexBetween mt="0.25rem">

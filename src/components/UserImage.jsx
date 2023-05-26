@@ -8,7 +8,7 @@ const UserImage = ({ image, size = "60px" }) => {
         width={size}
         height={size}
         alt="user"
-        src={`https://hello-social-media-server-production.up.railway.app/assets/${image}`}
+        src={`${process.env.REACT_APP_API}/assets/${image}`}
       />
     </Box>
   );

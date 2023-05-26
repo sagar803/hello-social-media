@@ -13,7 +13,14 @@ const HomePage = () => {
 
   return (
     <Box>
-      <Navbar />
+      <Box
+        zIndex="2"
+        padding='10px 6%'
+        position={isNonMobileScreens ?'sticky' : "block"}
+        top="10px"
+      >
+        <Navbar />
+      </Box>
       <Box
         width="100%"
         padding="2rem 6%"
@@ -21,7 +28,9 @@ const HomePage = () => {
         gap="0.5rem"
         justifyContent="space-between"
       >
-        <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
+        <Box
+          flexBasis={isNonMobileScreens ? "26%" : undefined}
+        >
           <UserWidget userId={_id} picturePath={picturePath} />
         </Box>
         <Box

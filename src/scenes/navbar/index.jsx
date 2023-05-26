@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import {
   Box,
   IconButton,
@@ -21,17 +21,26 @@ import {
   Close,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { setMode, setLogout } from "state";
+import { setMode, setLogout , setUsers} from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import SearchResultWidget from "../widgets/SearchResultWidget";
 
 /*const fullName = `${user.firstName} ${user.lastName}`;*/
 
 function Navbar (){
+  const [search, setSearch] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const users = useSelector((state) => state.users);
   const user = useSelector((state) => state.user);
+  const { _id } = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);  
+
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
@@ -42,8 +51,40 @@ function Navbar (){
   const alt = theme.palette.background.alt;
 
   const fullName = `${user.firstName} ${user.lastName}`;
-  return (
-    <FlexBetween padding="1rem 6%" backgroundColor={alt}>
+  
+  const deleteAccount = async () => {
+    const deleted = await fetch(
+      `${process.env.REACT_APP_API}/users/${_id}`, 
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const response = await deleted.json();
+      dispatch(setLogout())
+  };
+
+  const getUsers = async () => {
+    const users = await fetch(
+      `${process.env.REACT_APP_API}/users`,
+      {
+        method : "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    const response = await users.json();
+    dispatch(setUsers({users: response}));
+  }
+  useEffect(() => {
+    getUsers();
+  }, []);
+    
+  const handleSearch = (event) => {
+    setSearch(event.target.value)
+    const result = users.filter((user) => user.firstName.includes(search) || user.lastName.includes(search) || user.fullName.includes(search));
+    setSearchResult(result)
+  }
+
+    return (
+      <FlexBetween borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -60,18 +101,26 @@ function Navbar (){
           Hello
         </Typography>
         {isNonMobileScreens && (
-          <FlexBetween
-            backgroundColor={neutralLight}
-            borderRadius="9px"
-            gap="3rem"
-            padding="0.1rem 1.5rem"
-          >
-            <InputBase placeholder="Search..." />
-            <IconButton>
-              <Search />
-            </IconButton>
-          </FlexBetween>
+          <Box>
+            <FlexBetween
+                backgroundColor={neutralLight}
+                borderRadius="9px"
+                gap="3rem"
+                padding="0.1rem 1.5rem"
+                >
+                <InputBase 
+                  onChange={handleSearch}
+                  value={search}
+                  placeholder="Search..." 
+                />
+                <IconButton onClick={searchResult}>
+                  <Search />
+                </IconButton>
+            </FlexBetween>
+            { search && <SearchResultWidget users={searchResult}/>}
+          </Box>
         )}
+        
       </FlexBetween>
 
       {/* DESKTOP NAV */}
@@ -106,8 +155,9 @@ function Navbar (){
               input={<InputBase />}
             >
               <MenuItem value={fullName}>
-                <Typography>{fullName}</Typography>
-              </MenuItem>
+                  <Typography>{fullName}</Typography>
+                </MenuItem>
+              <MenuItem onClick={deleteAccount}>Delete Account</MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
           </FormControl>
@@ -119,7 +169,6 @@ function Navbar (){
           <Menu />
         </IconButton>
       )}
-
       {/* MOBILE NAV */}
       { !isNonMobileScreens && isMobileMenuToggled && (
         <Box
@@ -183,9 +232,8 @@ function Navbar (){
                 <MenuItem value={fullName}>
                   <Typography>{fullName}</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => dispatch(setLogout())}>
-                  Log Out
-                </MenuItem>
+                <MenuItem onClick={deleteAccount}>Delete Account</MenuItem>
+                <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
               </Select>
             </FormControl>
           </FlexBetween>

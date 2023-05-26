@@ -69,7 +69,7 @@ export const colorTokens = {
                 light: colorTokens.grey[50],
               },
               background: {
-                default: colorTokens.grey[10],
+                default: colorTokens.grey[100],
                 alt: colorTokens.grey[0],
               },
             }),

@@ -5,7 +5,12 @@ const LoginPage = () => {
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   return (
-    <Box>
+    <Box 
+      display="flex"
+      flexDirection="column"
+      justifyContent='space-between'
+      height='100vh'
+    >
       <Box
         width="100%"
         backgroundColor={theme.palette.background.alt}
@@ -18,7 +23,8 @@ const LoginPage = () => {
       </Box>
 
       <Box
-        width={isNonMobileScreens ? "50%" : "93%"}
+        width={isNonMobileScreens ? "500px" : "90%"}
+        maxWidth='500px'
         p="2rem"
         m="2rem auto"
         borderRadius="1.5rem"
