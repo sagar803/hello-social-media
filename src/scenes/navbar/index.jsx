@@ -19,6 +19,7 @@ import {
   Help,
   Menu,
   Close,
+  Clear
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout , setUsers} from "state";
@@ -53,14 +54,23 @@ function Navbar (){
   const fullName = `${user.firstName} ${user.lastName}`;
   
   const deleteAccount = async () => {
-    const deleted = await fetch(
-      `${process.env.REACT_APP_API}/users/${_id}`, 
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const response = await deleted.json();
-      dispatch(setLogout())
+    const userInput = window.prompt("Warning: Are you sure you want to delete your account. Type 'CONFIRM' To continue:");
+    if (userInput === "CONFIRM"){
+      const deleted = await fetch(
+        `${process.env.REACT_APP_API}/users/${_id}`, 
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const response = await deleted.json();
+        console.log(response)
+        dispatch(setLogout())
+        window.alert("Account deleted successfully.");
+    }
+    else{
+      window.alert("Account deletion canceled. You did not enter the correct confirmation code.");
+    }
+    
   };
 
   const getUsers = async () => {
@@ -75,6 +85,7 @@ function Navbar (){
   }
   useEffect(() => {
     getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
     
   const handleSearch = (event) => {
@@ -116,8 +127,8 @@ function Navbar (){
                   value={search}
                   placeholder="Search..." 
                 />
-                <IconButton onClick={searchResult}>
-                  <Search />
+                <IconButton>
+                  { search ? <Clear onClick={ () => setSearch("")} /> : <Search />}
                 </IconButton>
             </FlexBetween>
             { search && <SearchResultWidget users={searchResult}/>}
