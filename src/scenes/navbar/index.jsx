@@ -82,6 +82,9 @@ function Navbar (){
     const result = users.filter((user) => user.firstName.includes(search) || user.lastName.includes(search) || user.fullName.includes(search));
     setSearchResult(result)
   }
+  const openMessaging = () => {
+    window.open(`${process.env.REACT_APP_MESSAGING_URL}`, '_blank');
+  };
 
     return (
       <FlexBetween borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
@@ -133,7 +136,9 @@ function Navbar (){
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
+          <IconButton onClick={openMessaging}>
+            <Message sx={{ fontSize: "25px" }} />
+          </IconButton>
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
@@ -208,7 +213,9 @@ function Navbar (){
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: "25px" }} />
+            <IconButton onClick={openMessaging}>
+              <Message sx={{ fontSize: "25px" }} />
+            </IconButton>
             <Notifications sx={{ fontSize: "25px" }} />
             <Help sx={{ fontSize: "25px" }} />
             <FormControl variant="standard" value={fullName}>
