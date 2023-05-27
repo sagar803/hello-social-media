@@ -1,60 +1,61 @@
-import { Box, Typography, useTheme } from "@mui/material";
-import Friend from "components/Friend";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import SearchUsers from "components/SearchUsers";
 import WidgetWrapper from "components/WidgetWrapper";
 
 const SearchResultWidget = ({ users }) => {
   const { palette } = useTheme();
-  
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   return (
-    <Box
-        maxHeight="400px"
-        width="290px"
-        overflow="auto"
-        position='absolute'
-        borderRadius='8px'
-        border="1px solid grey"
-        sx={{
-            '&::-webkit-scrollbar': {
-              width: '5px',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: '#f1f1f1',
-              borderRadius: '8px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '8px',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: '#555',
-            },
-          }}
-    >
-        <WidgetWrapper>
-        <Typography
-            color={palette.neutral.dark}
-            variant="h6"
-            fontWeight="200"
-            sx={{ mb: "1rem" }}
+        <Box
+          marginTop="5px"
+          padding= "1rem 0.25rem 1rem .5rem"
+          backgroundColor={palette.neutral.light}
+          fontSize="0.5rem"
+          maxHeight="300px"
+          width="200px"
+          position='absolute'
+          borderRadius='8px'
+          zIndex="1"
         >
-            {(users.length) ? 'Search Results...' : 'No user found'}
-        </Typography>
-        <Box display="flex" flexDirection="column" gap="1.5rem">
-        {users.length && (
-            users.map((user) => (
-                <Friend
-                    key={user._id}
-                    friendId={user._id}
-                    name={`${user.firstName} ${user.lastName}`}
-                    subtitle={user.occupation}
-                    userPicturePath={user.picturePath}
-                />
-                ))
-            )
-        }
+            <Typography
+                color={palette.neutral.dark}
+                variant="h6"
+                fontWeight="200"
+                sx={{ mb: "1rem" }}
+            >
+                {(users.length) ? 'Search Results...' : 'No user found'}
+            </Typography>
+            <Box 
+              paddingRight="0.15rem"
+              maxHeight="210px"
+              display="flex" 
+              flexDirection="column" 
+              gap="1rem"
+              overflow="auto"
+              sx={{
+              '&::-webkit-scrollbar': {
+                width: '2px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: palette.primary.main,
+                borderRadius: '8px',
+              },
+            }}  
+            >
+            {users.length && (
+                users.map((user) => (
+                    <SearchUsers
+                        key={user._id}
+                        friendId={user._id}
+                        name={`${user.firstName} ${user.lastName}`}
+                        subtitle={user.occupation}
+                        userPicturePath={user.picturePath}
+                    />
+                    ))
+                )
+            }
+            </Box>
         </Box>
-        </WidgetWrapper>
-    </Box>
   );
 };
 

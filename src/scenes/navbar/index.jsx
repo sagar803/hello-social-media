@@ -114,27 +114,26 @@ function Navbar (){
         >
           Hello
         </Typography>
-        {isNonMobileScreens && (
-          <Box>
-            <FlexBetween
-                backgroundColor={neutralLight}
-                borderRadius="9px"
-                gap="3rem"
-                padding="0.1rem 1.5rem"
-                >
-                <InputBase 
-                  onChange={handleSearch}
-                  value={search}
-                  placeholder="Search..." 
-                />
-                <IconButton>
-                  { search ? <Clear onClick={ () => setSearch("")} /> : <Search />}
-                </IconButton>
-            </FlexBetween>
-            { search && <SearchResultWidget users={searchResult}/>}
-          </Box>
-        )}
-        
+        <Box>
+          <FlexBetween
+              width={isNonMobileScreens ? "200px" : "130px"}
+              backgroundColor={neutralLight}
+              borderRadius="9px"
+              gap="1rem"
+              padding="0.1rem 1rem"
+              >
+              <InputBase 
+                onChange={handleSearch}
+                value={search}
+                placeholder="Search..." 
+              />
+              <IconButton>
+                { search ? <Clear onClick={ () => setSearch("")} /> : <Search />}
+              </IconButton>
+          </FlexBetween>
+          { search && <SearchResultWidget users={searchResult}/>}
+        </Box>
+
       </FlexBetween>
 
       {/* DESKTOP NAV */}
