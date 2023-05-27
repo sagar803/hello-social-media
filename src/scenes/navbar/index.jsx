@@ -1,6 +1,8 @@
-import { useState , useEffect} from "react";
+import React, { useState , useEffect} from "react";
 import {
+  Menu,
   Box,
+  Button,
   IconButton,
   InputBase,
   Typography,
@@ -17,15 +19,16 @@ import {
   LightMode,
   Notifications,
   Help,
-  Menu,
   Close,
   Clear
 } from "@mui/icons-material";
+import { Menu as IconsMenu } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout , setUsers} from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import SearchResultWidget from "../widgets/SearchResultWidget";
+import UserImage from "components/UserImage";
 
 /*const fullName = `${user.firstName} ${user.lastName}`;*/
 
@@ -38,7 +41,7 @@ function Navbar (){
 
   const users = useSelector((state) => state.users);
   const user = useSelector((state) => state.user);
-  const { _id } = useSelector((state) => state.user);
+  const { _id, picturePath } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);  
 
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -49,11 +52,12 @@ function Navbar (){
   const background = theme.palette.background.default;
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
-
   const fullName = `${user.firstName} ${user.lastName}`;
   
+
+
   const deleteAccount = async () => {
-    const userInput = window.prompt("Warning: Are you sure you want to delete your account. Type 'CONFIRM' To continue:");
+    const userInput = window.prompt("This is irreversible. Type 'CONFIRM' To continue:");
     if (userInput === "CONFIRM"){
       const deleted = await fetch(
         `${process.env.REACT_APP_API}/users/${_id}`, 
@@ -91,6 +95,17 @@ function Navbar (){
     window.open(`${process.env.REACT_APP_MESSAGING_URL}`, '_blank');
   };
   
+  //side menu logout menu settings from MUI menu components
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+
     return (
       <FlexBetween  marginTop="10px" borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
@@ -143,8 +158,12 @@ function Navbar (){
           <IconButton onClick={openMessaging}>
             <Message sx={{ fontSize: "25px" }} />
           </IconButton>
-          <Notifications sx={{ fontSize: "25px" }} />
-          <Help sx={{ fontSize: "25px" }} />
+          <IconButton>
+            <Notifications sx={{ fontSize: "25px" }} />
+          </IconButton>
+          <IconButton>
+            <Help sx={{ fontSize: "25px" }} />
+          </IconButton>
           <FormControl variant="standard" value={fullName}>
             <Select
               value={fullName}
@@ -164,40 +183,43 @@ function Navbar (){
               input={<InputBase />}
             >
               <MenuItem value={fullName}>
-                  <Typography>{fullName}</Typography>
-                </MenuItem>
+                <Typography>{fullName}</Typography>
+              </MenuItem>
               <MenuItem onClick={deleteAccount}>Delete Account</MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
           </FormControl>
         </FlexBetween>
       ) : (
-        <IconButton
-          onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
-        >
-          <Menu />
-        </IconButton>
-      )}
-      {/* MOBILE NAV */}
-      { !isNonMobileScreens && isMobileMenuToggled && (
-        <Box
-          position="fixed"
-          right="0"
-          top="0"
-          height="100%"
-          zIndex="10"
-          maxWidth="300px"
-          minWidth="200px"
-          backgroundColor={background}
-        >
-          {/* CLOSE ICON */}
-          <Box display="flex" justifyContent="flex-end" p="1rem">
+            isMobileMenuToggled
+            ? (
+              <Box 
+                backgroundColor={neutralLight}
+                borderRadius="8px">
+                <IconButton
+                  onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
+                >
+                  <Close />
+                </IconButton>
+              </Box>
+            ) : (
             <IconButton
               onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
             >
-              <Close />
+              <IconsMenu />
             </IconButton>
-          </Box>
+            )
+      )}
+
+      {/* MOBILE NAV */}
+      { !isNonMobileScreens && isMobileMenuToggled && (
+        <Box
+          position="absolute"
+          right="6%"
+          top="15%"
+          zIndex="10"
+          width="80px"
+        >
 
           {/* MENU ITEMS */}
           <FlexBetween
@@ -205,7 +227,11 @@ function Navbar (){
             flexDirection="column"
             justifyContent="center"
             alignItems="center"
-            gap="3rem"
+            padding="10px"
+            gap="2rem"
+            backgroundColor={neutralLight}
+            borderRadius="8px"
+            boxShadow='0px 0px 20px 1px rgba(0, 0, 0, 0.3)'
           >
             <IconButton
               onClick={() => dispatch(setMode())}
@@ -220,14 +246,43 @@ function Navbar (){
             <IconButton onClick={openMessaging}>
               <Message sx={{ fontSize: "25px" }} />
             </IconButton>
-            <Notifications sx={{ fontSize: "25px" }} />
-            <Help sx={{ fontSize: "25px" }} />
-            <FormControl variant="standard" value={fullName}>
+            <IconButton>
+              <Notifications sx={{ fontSize: "25px" }} />
+            </IconButton>
+            <IconButton>
+              <Help sx={{ fontSize: "25px" }} />
+            </IconButton>
+
+            <Button
+              id="basic-button"
+              aria-controls={open ? 'basic-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick}
+            >
+              <UserImage image={picturePath} />
+            </Button>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem value={fullName}>
+                  <Typography>{fullName}</Typography>
+              </MenuItem>
+              <MenuItem onClick={deleteAccount}>Delete Account</MenuItem>
+              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+            </Menu>
+
+            {/*<FormControl variant="standard" value={fullName}>
               <Select
                 value={fullName}
                 sx={{
                   backgroundColor: neutralLight,
-                  width: "150px",
                   borderRadius: "0.25rem",
                   p: "0.25rem 1rem",
                   "& .MuiSvgIcon-root": {
@@ -247,6 +302,7 @@ function Navbar (){
                 <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
               </Select>
             </FormControl>
+              */}
           </FlexBetween>
         </Box>
       )}

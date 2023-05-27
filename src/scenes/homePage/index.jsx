@@ -14,11 +14,12 @@ const HomePage = () => {
   return (
     <Box>
       <Box
-        zIndex="2"
+        zIndex="1"
         padding='1rem 4%'
         position={isNonMobileScreens ?'sticky' : "block"}
         top="0"
-        sx={{backdropFilter: 'blur(2px)'}}
+
+        sx={{backdropFilter: isNonMobileScreens ? 'blur(2px)' : "undefined"}}
         
       >
         <Navbar />
