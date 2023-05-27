@@ -2,9 +2,12 @@ import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import SearchUsers from "components/SearchUsers";
 import WidgetWrapper from "components/WidgetWrapper";
 
-const SearchResultWidget = ({ users }) => {
+const SearchResultWidget = ({ search, users }) => {
+  //search is what is to searched and users is all users array
   const { palette } = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  
+  const resultResult = users.filter((user) => user.firstName.toLowerCase().includes(search.toLowerCase()) || user.lastName.includes(search.toLowerCase()));
   return (
         <Box
           marginTop="5px"
@@ -43,7 +46,7 @@ const SearchResultWidget = ({ users }) => {
             }}  
             >
             {users.length && (
-                users.map((user) => (
+                resultResult.map((user) => (
                     <SearchUsers
                         key={user._id}
                         friendId={user._id}

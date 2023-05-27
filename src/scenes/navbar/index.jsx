@@ -31,7 +31,6 @@ import SearchResultWidget from "../widgets/SearchResultWidget";
 
 function Navbar (){
   const [search, setSearch] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   
   const dispatch = useDispatch();
@@ -88,17 +87,12 @@ function Navbar (){
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
     
-  const handleSearch = (event) => {
-    setSearch(event.target.value)
-    const result = users.filter((user) => user.firstName.includes(search) || user.lastName.includes(search) || user.fullName.includes(search));
-    setSearchResult(result)
-  }
   const openMessaging = () => {
     window.open(`${process.env.REACT_APP_MESSAGING_URL}`, '_blank');
   };
-
+  
     return (
-      <FlexBetween borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
+      <FlexBetween  marginTop="10px" borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -123,7 +117,7 @@ function Navbar (){
               padding="0.1rem 1rem"
               >
               <InputBase 
-                onChange={handleSearch}
+                onChange={(event)=>setSearch(event.target.value)}
                 value={search}
                 placeholder="Search..." 
               />
@@ -131,7 +125,7 @@ function Navbar (){
                 { search ? <Clear onClick={ () => setSearch("")} /> : <Search />}
               </IconButton>
           </FlexBetween>
-          { search && <SearchResultWidget users={searchResult}/>}
+          { search && <SearchResultWidget search={search} users={users}/>}
         </Box>
 
       </FlexBetween>

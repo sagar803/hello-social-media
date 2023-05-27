@@ -15,15 +15,18 @@ const HomePage = () => {
     <Box>
       <Box
         zIndex="2"
-        padding='10px 6%'
+        padding='1rem 4%'
         position={isNonMobileScreens ?'sticky' : "block"}
-        top="10px"
+        top="0"
+        sx={{backdropFilter: 'blur(2px)'}}
+        
       >
         <Navbar />
       </Box>
+
       <Box
         width="100%"
-        padding="2rem 6%"
+        padding="1rem 4%"
         display={isNonMobileScreens ? "flex" : "block"}
         gap="0.5rem"
         justifyContent="space-between"
@@ -40,6 +43,7 @@ const HomePage = () => {
           <MyPostWidget picturePath={picturePath} />
           <PostsWidget userId={_id} />
         </Box>
+        
         {isNonMobileScreens && (
           <Box flexBasis="26%">
             <AdvertWidget />
