@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Link, Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Form from "./Form";
 
 const LoginPage = () => {
@@ -36,6 +36,13 @@ const LoginPage = () => {
           Connecting people, building communities.
         </Typography>
         <Form />
+        <Typography textAlign="center" fontWeight="400" variant="h6" sx={{ m: "1.5rem" }}>
+          * Dummy User Credentials *
+          <br/>
+          Email : test@gmail.com
+          <br/>
+          Password : test
+        </Typography>
       </Box>
       <Box
         width="100%"
@@ -43,9 +50,15 @@ const LoginPage = () => {
         p="0.5rem 6%"
         textAlign="center"
       >
-        <Typography fontSize="13px" color="primary">
-          &#169; sagar chawla
-        </Typography>
+      <Link 
+        target="blank"
+        href="https://www.linkedin.com/in/sagar-chawla-1085231bb/" 
+        fontSize="13px" 
+        color="primary"
+        textDecoration= "none"
+      >
+        &#169; sagar chawla
+      </Link>
       </Box>
     </Box>
   );
