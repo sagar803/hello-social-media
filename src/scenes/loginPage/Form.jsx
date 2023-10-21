@@ -267,7 +267,7 @@ const Form = () => {
               }}
             >
               {loading 
-                ? <CircularProgress size={20} color='secondary' />
+                ? <CircularProgress size={20} sx={{color: 'black'}} />
                 : (isLogin ? "LOGIN" : "REGISTER")
               }
             </Button>
@@ -286,7 +286,7 @@ const Form = () => {
                   }}
                 >
                   {loading 
-                    ? <CircularProgress size={20} color='secondary' />
+                    ? <CircularProgress size={20}  sx={{color: 'black'}}/>
                     : "Dummy User"
                   }
                 </Button>
