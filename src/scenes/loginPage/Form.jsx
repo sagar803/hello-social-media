@@ -286,7 +286,7 @@ const Form = () => {
                   }}
                 >
                   {loading 
-                    ? <CircularProgress size={20}  sx={{color: 'black'}}/>
+                    ? <CircularProgress size={20}  sx={{color: palette.background.alt }}/>
                     : "Dummy User"
                   }
                 </Button>
