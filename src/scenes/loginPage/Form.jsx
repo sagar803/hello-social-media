@@ -57,6 +57,10 @@ const Form = () => {
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
 
+  const dummyUserLogin = async () => {
+    login({email: "test@gmail.com", password: "tester"})
+  }
+  
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
     setLoading(true);
@@ -96,7 +100,7 @@ const Form = () => {
       });
       const loggedIn = await loggedInResponse.json();
       console.log(loggedIn);
-      onSubmitProps.resetForm();
+/*      onSubmitProps.resetForm(); */
       if (loggedIn) {
         dispatch(
           setLogin({
@@ -252,10 +256,10 @@ const Form = () => {
            {/* BUTTONS */}
           <Box>
             <Button
-              fullWidth
               type="submit"
               sx={{
-                m: "2rem 0",
+                width: isLogin ? "45%" : "100%",
+                m: "2rem 2%",
                 p: "1rem",
                 backgroundColor: palette.primary.main,
                 color: palette.background.alt,
@@ -267,6 +271,27 @@ const Form = () => {
                 : (isLogin ? "LOGIN" : "REGISTER")
               }
             </Button>
+            {
+              isLogin && (
+                <Button
+                  type="submit"
+                  onClick={dummyUserLogin}
+                  sx={{
+                    width: "45%",
+                    m: "2rem 3%",
+                    p: "1rem",
+                    backgroundColor: palette.primary.main,
+                    color: palette.background.alt,
+                    "&:hover": { color: palette.primary.main },
+                  }}
+                >
+                  {loading 
+                    ? <CircularProgress size={20} />
+                    : "Dummy User"
+                  }
+                </Button>
+              )
+            }
             <Typography
               onClick={() => {
                 setPageType(isLogin ? "register" : "login");

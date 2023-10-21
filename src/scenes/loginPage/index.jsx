@@ -36,13 +36,6 @@ const LoginPage = () => {
           Connecting people, building communities.
         </Typography>
         <Form />
-        <Typography textAlign="center" fontWeight="400" variant="h6" sx={{ m: "1.5rem" }}>
-          * Dummy User Credentials *
-          <br/>
-          Email : test@gmail.com
-          <br/>
-          Password : test
-        </Typography>
       </Box>
       <Box
         width="100%"
