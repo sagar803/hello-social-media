@@ -147,28 +147,14 @@ const Chat = () => {
 
   return (
     <Box>
-      <Box
-        zIndex="1"
-        padding='1rem 4%'
-        position={isNonMobileScreens ?'sticky' : "block"}
-        top="0"
-
-        sx={{backdropFilter: isNonMobileScreens ? 'blur(2px)' : "undefined"}}
-        
-      >
+      <Box zIndex="1" padding='1rem 4%' position={isNonMobileScreens ?'sticky' : "block"} top="0" sx={{backdropFilter: isNonMobileScreens ? 'blur(2px)' : "undefined"}} >
         <Navbar />
       </Box>
 
-      <Box
-        width="100%"
-        padding="1rem 4%"
-        display={isNonMobileScreens ? "flex" : "block"}
-        gap="0.5rem"
-        justifyContent="space-between"
-      >
+      <Box width="100%" padding="1rem 4%" display={isNonMobileScreens ? "flex" : "block"} gap="0.5rem" justifyContent="space-between">
         {/* User List on the Left */}
         {isNonMobileScreens ? (
-              <Box flexBasis="26%" item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
+          <Box flexBasis="26%" item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
               <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
                 Friends
               </Typography>
@@ -277,7 +263,7 @@ const Chat = () => {
                         cursor: 'pointer',
                       }}
                     >
-                      {isActive ? 'Close' : 'Open Chats'}
+                      {isActive ? 'Close' : 'Friends List'}
                     </Box>
                   )}
               </Box>
@@ -351,10 +337,30 @@ const Chat = () => {
                 </Button>
               </Paper>
             </>
-          ) : (
+          ) : isNonMobileScreens ? (
             <Typography variant="h6" p={2} textAlign="center">
               Click on a friend to start a conversation.
             </Typography>
+          ) : (
+            <Box item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
+            <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
+              Click on a friend to start a conversation.
+            </Typography>
+            <List>
+              {friends && friends.map((friend) => {
+                const isOnline = onlineUsers.includes(friend._id);
+                return (
+                  <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1, backgroundColor: (activeChat && activeChat._id == friend._id) ? neutralLight : 'transparent'}}>
+                    <Box sx={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden' }} >
+                      <UserImage image={friend.picturePath} size="50px" />                      
+                      {isOnline && <Box sx={{position: 'absolute', bottom: 2, right: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'green', border: '2px solid #fff' }}/>}
+                    </Box>
+                    <ListItemText primary={`${friend.firstName} ${friend.lastName}`} sx={{ ml: 1 }}/>
+                  </ListItem>
+                );
+              })}
+            </List>
+        </Box>     
           )}
         </Box>
       </Box>
