@@ -39,6 +39,12 @@ const Chat = () => {
   const alt = theme.palette.background.alt;
   const [chatId, setChatId] = useState(null);
   const [messagesLoading, setMessagesLoading] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsActive((prev) => !prev);
+  };
+
 
   const handleReceivePrivateMessage  = useCallback(
     (msg) => {
@@ -161,51 +167,87 @@ const Chat = () => {
         justifyContent="space-between"
       >
         {/* User List on the Left */}
-        <Box flexBasis="26%" item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
-        <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
-          Friends
-        </Typography>
-            <List>
-              {friends && friends.map((friend) => {
-                const isOnline = onlineUsers.includes(friend._id);
-                return (
-                  <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1}}>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        width: '50px',
-                        height: '50px',
-                        borderRadius: '8px',
-                        overflow: 'hidden', // Ensure the image is clipped inside the box
-                      }}
-                    >
-                      <UserImage image={friend.picturePath} size="50px" />
-                      
-                      {/* Online status indicator */}
-                      {isOnline && (
+        {isNonMobileScreens ? (
+              <Box flexBasis="26%" item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
+              <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
+                Friends
+              </Typography>
+              <List>
+                {friends && friends.map((friend) => {
+                  const isOnline = onlineUsers.includes(friend._id);
+                  return (
+                    <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1, backgroundColor: activeChat._id == friend._id ? neutralLight : 'transparent'}}>
+                      <Box sx={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden' }} >
+                        <UserImage image={friend.picturePath} size="50px" />                      
+                        {isOnline && <Box sx={{position: 'absolute', bottom: 2, right: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'green', border: '2px solid #fff' }}/>}
+                      </Box>
+                      <ListItemText primary={`${friend.firstName} ${friend.lastName}`} sx={{ ml: 1 }}/>
+                    </ListItem>
+                  );
+                })}
+              </List>
+          </Box>     
+        ) : (
+          <Box
+              sx={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '300px',
+                height: '100vh',
+                backgroundColor: alt,
+                transform: isActive ? 'translateX(0)' : 'translateX(-100%)',
+                transition: 'transform 0.3s ease-in-out',
+                zIndex: 10,
+                borderRadius: '0 8px 8px 0',
+              }}
+            >
+              <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
+                Friends
+              </Typography>
+              <List>
+                {friends &&
+                  friends.map((friend) => {
+                    const isOnline = onlineUsers.includes(friend._id);
+                    return (
+                      <ListItem
+                        button
+                        onClick={() => handleFriendClick(friend)}
+                        key={friend._id}
+                        sx={{ mb: 1, backgroundColor: activeChat._id == friend._id ? neutralLight : 'transparent'}}
+                      >
                         <Box
                           sx={{
-                            position: 'absolute',
-                            bottom: 2,
-                            right: 2,
-                            width: 14,
-                            height: 14,
-                            borderRadius: '50%',
-                            backgroundColor: 'green',
-                            border: '2px solid #fff',
+                            position: 'relative',
+                            width: '50px',
+                            height: '50px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
                           }}
-                        />
-                      )}
-                    </Box>
-                    <ListItemText
-                      primary={`${friend.firstName} ${friend.lastName}`}
-                      sx={{ ml: 1 }}
-                    />
-                  </ListItem>
-                );
-              })}
-            </List>
-        </Box>     
+                        >
+                          <UserImage image={friend.picturePath} size="50px" />
+                          {isOnline && (
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                bottom: 2,
+                                right: 2,
+                                width: 14,
+                                height: 14,
+                                borderRadius: '50%',
+                                backgroundColor: 'green',
+                                border: '2px solid #fff',
+                              }}
+                            />
+                          )}
+                        </Box>
+                        <ListItemText primary={`${friend.firstName} ${friend.lastName}`} sx={{ ml: 1 }} />
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            </Box>
+          )}
 
         {/* Chat Section on the Right */}
         <Box flexBasis="70%" item xs={9} display="flex" flexDirection="column" height="80vh">
@@ -216,23 +258,28 @@ const Chat = () => {
           ) : activeChat ? (
             <>
               {/* Chat Header */}
-              <Box
-                backgroundColor={alt}
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  height: "10%",
-                  borderRadius: "8px",
-                }}
-              >
-                {activeChat && (
-                  <>
-                    <Avatar sx={{ mr: 2 }}>{activeChat.firstName[0]}</Avatar>
-                    <Typography>{`${activeChat.firstName} ${activeChat.lastName}`}</Typography>
-                  </>
-                )}
+              <Box backgroundColor={alt} sx={{ position: 'relative', p: 2, display: "flex", alignItems: "center", flexDirection: "row", height: "10%", borderRadius: "8px", }}  >
+                  <Box sx={{ position: 'relative', width: '50px', height: '40px', borderRadius: '8px', overflow: 'hidden' }} >
+                    <UserImage image={activeChat.picturePath} size="40px" />                      
+                    {onlineUsers.includes(activeChat._id) && <Box sx={{position: 'absolute', bottom: 2, right: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'green', border: '2px solid #fff' }}/>}
+                  </Box>
+                  <Typography>{`${activeChat.firstName} ${activeChat.lastName}`}</Typography>
+
+                  {!isNonMobileScreens && (
+                    <Box
+                      onClick={toggleSidebar}
+                      sx={{
+                        position: 'absolute',
+                        right: '10px',
+                        backgroundColor: 'gray',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {isActive ? 'Close' : 'Open Chats'}
+                    </Box>
+                  )}
               </Box>
 
               {/* Chat Messages */}
