@@ -13,7 +13,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setLogin } from "state";
+import { setFriends, setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 
@@ -102,12 +102,16 @@ const Form = () => {
       console.log(loggedIn);
 /*      onSubmitProps.resetForm(); */
       if (loggedIn) {
-        dispatch(
-          setLogin({
-            user: loggedIn.user,
-            token: loggedIn.token,
-          })
+          const response = await fetch(
+            `${process.env.REACT_APP_API}/users/${loggedIn.user._id}/friends`,
+            {
+              method: "GET",
+              headers: { Authorization: `Bearer ${loggedIn.token}` },
+            }
           );
+          const data = await response.json();
+          dispatch(setLogin({user: loggedIn.user, token: loggedIn.token}));
+          dispatch(setFriends({ friends: data }));        
           navigate("/home");
         }
       } catch (error) {

@@ -32,7 +32,7 @@ import UserImage from "components/UserImage";
 
 /*const fullName = `${user.firstName} ${user.lastName}`;*/
 
-function Navbar (){
+function Navbar ({marginTop="10px"}){
   const [search, setSearch] = useState("");
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   
@@ -90,10 +90,6 @@ function Navbar (){
     getUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-    
-  const openMessaging = () => {
-    window.open(`${process.env.REACT_APP_MESSAGING_URL}`, '_blank');
-  };
   
   //side menu logout menu settings from MUI menu components
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -107,7 +103,7 @@ function Navbar (){
 
 
     return (
-      <FlexBetween  marginTop="10px" borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
+      <FlexBetween  marginTop={marginTop} borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -155,7 +151,7 @@ function Navbar (){
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <IconButton onClick={openMessaging}>
+          <IconButton onClick={() => navigate("/chat")}>
             <Message sx={{ fontSize: "25px" }} />
           </IconButton>
           <IconButton>
@@ -243,7 +239,7 @@ function Navbar (){
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <IconButton onClick={openMessaging}>
+            <IconButton onClick={() => navigate("/chat")}>
               <Message sx={{ fontSize: "25px" }} />
             </IconButton>
             <IconButton>
