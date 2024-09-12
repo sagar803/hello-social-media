@@ -20,32 +20,34 @@ export const SocketProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    if (user && user._id) {
+      const socket = io("http://localhost:3001");
 
-    socket.emit("userOnline", user._id);
+      socket.emit("userOnline", user._id);
 
-    socket.on("connect", () => {
-      socketRef.current = socket;
-      setConnected(true);
-    });
+      socket.on("connect", () => {
+        socketRef.current = socket;
+        setConnected(true);
+      });
 
-    socket.on("onlineUsers", (data) => {
-      setOnlineUsers(data);
-    });
+      socket.on("onlineUsers", (data) => {
+        setOnlineUsers(data);
+      });
 
-    socket.on("disconnect", () => {
-      setConnected(false);
-    });
+      socket.on("disconnect", () => {
+        setConnected(false);
+      });
 
-    socket.on("connect_error", (err) => {
-      setError(err.message);
-    });
+      socket.on("connect_error", (err) => {
+        setError(err.message);
+      });
 
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, [user._id]);
+      return () => {
+        socket.disconnect();
+        socketRef.current = null;
+      };
+    }
+  }, [user]);
 
   return (
     <SocketContext.Provider

@@ -69,7 +69,7 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (currentMessage.trim() && activeChat) {
-      setMessages((prevMessages) => [...prevMessages,{ chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage }]);
+      setMessages((prevMessages) => [...prevMessages,{ chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage, timestamp: Date.now()}]);
       socket.emit("privateMessage", { chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage });
       setCurrentMessage("");
     }
