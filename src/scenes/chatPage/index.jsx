@@ -17,9 +17,12 @@ import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import Navbar from "scenes/navbar";
 import { useTheme } from "@emotion/react";
+import { useSocket } from "hooks/useSocket";
+import UserImage from "components/UserImage";
 
 const Chat = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:500px)");
+  const { socket, onlineUsers, connected, error } = useSocket();
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const friends = user.friends || [];
@@ -37,17 +40,6 @@ const Chat = () => {
   const [chatId, setChatId] = useState(null);
   const [messagesLoading, setMessagesLoading] = useState(false);
 
-
-  useEffect(() => {
-    socketRef.current = io(`${process.env.REACT_APP_API}`);
-    socketRef.current.emit("userOnline", user._id);
-
-    return () => {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-    };
-  }, [user._id]);
-
   const handleReceivePrivateMessage  = useCallback(
     (msg) => {
       if (msg.senderId === activeChat?._id) {
@@ -60,12 +52,12 @@ const Chat = () => {
   );
   
   useEffect(() => {
-    if(socketRef.current){
-      socketRef.current.on("receivePrivateMessage", handleReceivePrivateMessage );
+    if(socket){
+      socket.on("receivePrivateMessage", handleReceivePrivateMessage );
     }
     return () => {
-      if(socketRef.current){
-        socketRef.current.off("receivePrivateMessage", handleReceivePrivateMessage );
+      if(socket){
+        socket.off("receivePrivateMessage", handleReceivePrivateMessage );
       }
     };
   }, [handleReceivePrivateMessage ])
@@ -78,7 +70,7 @@ const Chat = () => {
   const handleSendMessage = () => {
     if (currentMessage.trim() && activeChat) {
       setMessages((prevMessages) => [...prevMessages,{ chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage }]);
-      socketRef.current.emit("privateMessage", { chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage });
+      socket.emit("privateMessage", { chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage });
       setCurrentMessage("");
     }
   };
@@ -134,7 +126,6 @@ const Chat = () => {
 
       if (!messagesResponse.ok) throw new Error('Failed to fetch messages');
       const messages = await messagesResponse.json();
-      console.log(messages);  
       setMessages(messages);      
     } catch (error) {
       console.error('Error handling friend click:', error);
@@ -171,18 +162,50 @@ const Chat = () => {
       >
         {/* User List on the Left */}
         <Box flexBasis="26%" item xs={3} backgroundColor={alt} height="80vh" sx={{ overflowY: "auto", borderRadius: "8px" }}>
-          <Typography variant="h6" p={2}>
-            Friends
-          </Typography>
-          <List>
-            {friends && friends.map((friend) => (
-              <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id}>
-                <Avatar sx={{ mr: 2 }}>{friend.firstName[0]}</Avatar>
-                <ListItemText primary={`${friend.firstName} ${friend.lastName}`} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>        
+        <Typography variant="h6" p={2} sx={{ borderBottom: '1px solid #ddd' }}>
+          Friends
+        </Typography>
+            <List>
+              {friends && friends.map((friend) => {
+                const isOnline = onlineUsers.includes(friend._id);
+                return (
+                  <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1}}>
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: '50px',
+                        height: '50px',
+                        borderRadius: '8px',
+                        overflow: 'hidden', // Ensure the image is clipped inside the box
+                      }}
+                    >
+                      <UserImage image={friend.picturePath} size="50px" />
+                      
+                      {/* Online status indicator */}
+                      {isOnline && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 2,
+                            right: 2,
+                            width: 14,
+                            height: 14,
+                            borderRadius: '50%',
+                            backgroundColor: 'green',
+                            border: '2px solid #fff',
+                          }}
+                        />
+                      )}
+                    </Box>
+                    <ListItemText
+                      primary={`${friend.firstName} ${friend.lastName}`}
+                      sx={{ ml: 1 }}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+        </Box>     
 
         {/* Chat Section on the Right */}
         <Box flexBasis="70%" item xs={9} display="flex" flexDirection="column" height="80vh">
