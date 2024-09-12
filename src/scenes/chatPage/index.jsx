@@ -176,7 +176,7 @@ const Chat = () => {
                 {friends && friends.map((friend) => {
                   const isOnline = onlineUsers.includes(friend._id);
                   return (
-                    <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1, backgroundColor: activeChat._id == friend._id ? neutralLight : 'transparent'}}>
+                    <ListItem button onClick={() => handleFriendClick(friend)} key={friend._id} sx={{ mb: 1, backgroundColor: (activeChat && activeChat._id == friend._id) ? neutralLight : 'transparent'}}>
                       <Box sx={{ position: 'relative', width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden' }} >
                         <UserImage image={friend.picturePath} size="50px" />                      
                         {isOnline && <Box sx={{position: 'absolute', bottom: 2, right: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'green', border: '2px solid #fff' }}/>}
@@ -214,7 +214,7 @@ const Chat = () => {
                         button
                         onClick={() => handleFriendClick(friend)}
                         key={friend._id}
-                        sx={{ mb: 1, backgroundColor: activeChat._id == friend._id ? neutralLight : 'transparent'}}
+                        sx={{ mb: 1, backgroundColor: (activeChat && activeChat._id == friend._id) ? neutralLight : 'transparent'}}
                       >
                         <Box
                           sx={{
