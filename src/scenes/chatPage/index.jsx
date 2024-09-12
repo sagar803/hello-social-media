@@ -39,7 +39,7 @@ const Chat = () => {
 
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io(`${process.env.REACT_APP_API}`);
     socketRef.current.emit("userOnline", user._id);
 
     return () => {
