@@ -21,7 +21,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && user._id) {
-      const socket = io("http://localhost:3001");
+      const socket = io(`${process.env.REACT_APP_API}`);
 
       socket.emit("userOnline", user._id);
 
