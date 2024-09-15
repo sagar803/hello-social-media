@@ -49,7 +49,7 @@ const Chat = () => {
   const handleReceivePrivateMessage  = useCallback(
     (msg) => {
       if (msg.senderId === activeChat?._id) {
-        setMessages((prevMessages) => [...prevMessages, { chatId: msg.chatId, senderId: msg.senderId, receiverId: msg.receiverId, message: msg.message }]);
+        setMessages((prevMessages) => [...prevMessages, { chatId: msg.chatId, senderId: msg.senderId, receiverId: msg.receiverId, message: msg.message, timestamp}]);
       } else {
         console.log('Message from other user');
       }
@@ -75,8 +75,9 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (currentMessage.trim() && activeChat) {
-      setMessages((prevMessages) => [...prevMessages,{ chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage, timestamp: Date.now()}]);
-      socket.emit("privateMessage", { chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage });
+      let msg = { chatId, senderId: user._id, receiverId: activeChat._id, message: currentMessage, timestamp: Date.now()};
+      setMessages((prevMessages) => [...prevMessages, msg]);
+      socket.emit("privateMessage", msg );
       setCurrentMessage("");
     }
   };
