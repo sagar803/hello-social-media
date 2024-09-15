@@ -28,20 +28,23 @@ const PostsWidget = ({ userId, isProfile = false }) => {
   }, []);
 
 
-  const getFeedPosts = async () => {
+  const getPosts = async () => {
     if (loading || !hasMore) return;  
-    setLoading(true);
-    
+    setLoading(true);    
+    let endpoint = isProfile ? `posts/${userId}/posts` : 'posts';
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API}/posts?page=${page}&limit=5`, {
+      const response = await fetch(`${process.env.REACT_APP_API}/${endpoint}?page=${page}&limit=5`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
+
       if (!response.ok) throw new Error("Failed to fetch posts");
       const newPosts = await response.json();
+      console.log(newPosts)
       if (newPosts.length < 5) setHasMore(false);
   
       const allPosts = [...posts, ...newPosts];
@@ -50,32 +53,12 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
-  
     setLoading(false);
   };
   
-  const getUserPosts = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API}/posts/${userId}/posts?page=${page}&limit=5`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-
-    if (!response.ok) throw new Error("Failed to fetch posts");
-    const newPosts = await response.json();
-    if (newPosts.length < 5) setHasMore(false);
-
-    const allPosts = [...posts, ...newPosts];
-    setPage((prevPage) => prevPage + 1);
-    setPosts(allPosts);
-  };
-
 
   useEffect(() => {
-    if(inView && !loading){
-      if (isProfile) getUserPosts();
-      else getFeedPosts();
-    }
+    if(inView && !loading) getPosts();
   }, [inView]);
 
   return (
@@ -107,13 +90,13 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           />
         )
       )}
-      <div ref={loadRef}></div>
       {loading && (
         <Box display="flex" justifyContent="center" alignItems="center" width="100%">
           <CircularProgress />
         </Box>
       )}
       {!hasMore && <p>No more posts to load.</p>}
+      <div ref={loadRef}></div>
     </>
   );
 };
