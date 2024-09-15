@@ -49,7 +49,7 @@ const Chat = () => {
   const handleReceivePrivateMessage  = useCallback(
     (msg) => {
       if (msg.senderId === activeChat?._id) {
-        setMessages((prevMessages) => [...prevMessages, { chatId: msg.chatId, senderId: msg.senderId, receiverId: msg.receiverId, message: msg.message, timestamp}]);
+        setMessages((prevMessages) => [...prevMessages, { chatId: msg.chatId, senderId: msg.senderId, receiverId: msg.receiverId, message: msg.message, timestamp: Date.now() }]);
       } else {
         console.log('Message from other user');
       }
