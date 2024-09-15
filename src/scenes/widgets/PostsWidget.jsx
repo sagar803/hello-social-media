@@ -1,45 +1,86 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setPosts } from "state";
+import { useEffect, useRef, useState } from "react";
 import PostWidget from "./PostWidget";
+import { Box, CircularProgress } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
-  const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
+  const [posts, setPosts] = useState([]); 
+  const [page, setPage] = useState(1);    
+  const [loading, setLoading] = useState(false); 
+  const [hasMore, setHasMore] = useState(true); 
+  const loadRef = useRef();
+  const [inView, setInView] = useState(false);
 
-  const getPosts = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API}/posts`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+  console.log(posts.length);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setInView(entry.isIntersecting);
+      },{ threshold: 0.1 } 
+    );
+
+    if (loadRef.current) observer.observe(loadRef.current);
+    return () => {
+      if (loadRef.current) observer.unobserve(loadRef.current);
+    };
+  }, []);
+
+
+  const getFeedPosts = async () => {
+    if (loading || !hasMore) return;  
+    setLoading(true);
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API}/posts?page=${page}&limit=5`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch posts");
+      const newPosts = await response.json();
+      if (newPosts.length < 5) setHasMore(false);
+  
+      const allPosts = [...posts, ...newPosts];
+      setPosts(allPosts);
+      setPage((prevPage) => prevPage + 1);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  
+    setLoading(false);
   };
-
+  
   const getUserPosts = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API}/posts/${userId}/posts`,
-      {
+    const response = await fetch(`${process.env.REACT_APP_API}/posts/${userId}/posts?page=${page}&limit=5`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+
+    if (!response.ok) throw new Error("Failed to fetch posts");
+    const newPosts = await response.json();
+    if (newPosts.length < 5) setHasMore(false);
+
+    const allPosts = [...posts, ...newPosts];
+    setPage((prevPage) => prevPage + 1);
+    setPosts(allPosts);
   };
 
+
   useEffect(() => {
-    if (isProfile) {
-      getUserPosts();
-    } else {
-      getPosts();
+    if(inView && !loading){
+      if (isProfile) getUserPosts();
+      else getFeedPosts();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [inView]);
 
   return (
     <>
-      {posts.map(
+      {posts && posts?.map(
         ({
           _id,
           userId,
@@ -66,6 +107,13 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           />
         )
       )}
+      <div ref={loadRef}></div>
+      {loading && (
+        <Box display="flex" justifyContent="center" alignItems="center" width="100%">
+          <CircularProgress />
+        </Box>
+      )}
+      {!hasMore && <p>No more posts to load.</p>}
     </>
   );
 };
