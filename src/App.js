@@ -21,7 +21,10 @@ function App() {
           {/* CssBaseline to reset the theme to their basic version */}
           <CssBaseline />
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/"
+              element={isAuth ? <Navigate to="/home" /> : <LoginPage />}
+            />
             <Route
               path="/home"
               element={isAuth ? <HomePage /> : <Navigate to="/" />}
