@@ -3,9 +3,11 @@ import { Button, Menu, MenuItem, Badge, Typography, IconButton, Box } from '@mui
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useSelector } from 'react-redux';
 import UserImage from 'components/UserImage';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationMenu = () => {
   const friends = useSelector((state) => state.user.friends);
+  const navigate = useNavigate()
   const notifications = useSelector((state) => state.notifications);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -58,7 +60,7 @@ const NotificationMenu = () => {
           notifications.slice().reverse().map((notification, index) => {
             const { name, picturePath } = getFriendDetails(notification.senderId);
             return (
-              <MenuItem key={index}>
+              <MenuItem key={index} onClick={() => navigate(`/chat/${notification.senderId}`)}>
                 {picturePath && <UserImage size={'40px'} image={picturePath} />}
                 <Box ml={2}>
                   <Typography variant="subtitle1">

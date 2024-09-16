@@ -4,9 +4,12 @@ import React, {
   useEffect,
   useState,
   useRef,
+  useCallback,
 } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { setNotifications } from "state";
 
 const SocketContext = createContext(null);
 
@@ -15,7 +18,9 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }) => {
   const user = useSelector((state) => state.user);
   const socketRef = useRef(null);
+  const dispatch = useDispatch();
   const [connected, setConnected] = useState(false);
+  const [connectedFriendId, setConnectedFriendId] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [error, setError] = useState(null);
 
@@ -42,16 +47,34 @@ export const SocketProvider = ({ children }) => {
         setError(err.message);
       });
 
+      socket.on("receivePrivateMessage", handleRecieveMsg);
+
       return () => {
         socket.disconnect();
         socketRef.current = null;
       };
     }
-  }, [user]);
+  }, [user, connectedFriendId]);
+
+  const handleRecieveMsg = useCallback(
+    (msg) => {
+      if (msg.senderId !== connectedFriendId) {
+        dispatch(setNotifications({ notifications: msg }));
+      }
+    },
+    [connectedFriendId]
+  );
 
   return (
     <SocketContext.Provider
-      value={{ socket: socketRef.current, connected, error, onlineUsers }}
+      value={{
+        socket: socketRef.current,
+        connected,
+        error,
+        onlineUsers,
+        connectedFriendId,
+        setConnectedFriendId,
+      }}
     >
       {children}
     </SocketContext.Provider>
