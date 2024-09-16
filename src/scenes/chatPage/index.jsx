@@ -14,11 +14,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { io } from "socket.io-client";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "scenes/navbar";
 import { useTheme } from "@emotion/react";
 import { useSocket } from "hooks/useSocket";
 import UserImage from "components/UserImage";
+import { setNotifications } from "state";
 
 const Chat = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:500px)");
@@ -26,31 +27,27 @@ const Chat = () => {
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const friends = user.friends || [];
-  const socketRef = useRef(null);
   const [activeChat, setActiveChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const bottomRef = useRef(null);
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
-  const dark = theme.palette.neutral.dark;
   const background = theme.palette.background.default;
-  const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
   const [chatId, setChatId] = useState(null);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const dispatch = useDispatch();
 
-  const toggleSidebar = () => {
-    setIsActive((prev) => !prev);
-  };
-
+  const toggleSidebar = () => setIsActive((prev) => !prev);
 
   const handleReceivePrivateMessage  = useCallback(
     (msg) => {
       if (msg.senderId === activeChat?._id) {
         setMessages((prevMessages) => [...prevMessages, { chatId: msg.chatId, senderId: msg.senderId, receiverId: msg.receiverId, message: msg.message, timestamp: Date.now() }]);
       } else {
+        dispatch(setNotifications({notifications: msg}))        
         console.log('Message from other user');
       }
     },

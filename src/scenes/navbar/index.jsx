@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import SearchResultWidget from "../widgets/SearchResultWidget";
 import UserImage from "components/UserImage";
+import NotificationMenu from "scenes/widgets/Notifications";
 
 /*const fullName = `${user.firstName} ${user.lastName}`;*/
 
@@ -101,7 +102,6 @@ function Navbar ({marginTop="10px"}){
     setAnchorEl(null);
   };
 
-
     return (
       <FlexBetween  marginTop={marginTop} borderRadius="8px" padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
@@ -155,7 +155,7 @@ function Navbar ({marginTop="10px"}){
             <Message sx={{ fontSize: "25px" }} />
           </IconButton>
           <IconButton>
-            <Notifications sx={{ fontSize: "25px" }} />
+            <NotificationMenu/>
           </IconButton>
           <IconButton>
             <Help sx={{ fontSize: "25px" }} />
@@ -243,7 +243,7 @@ function Navbar ({marginTop="10px"}){
               <Message sx={{ fontSize: "25px" }} />
             </IconButton>
             <IconButton>
-              <Notifications sx={{ fontSize: "25px" }} />
+              <NotificationMenu />
             </IconButton>
             <IconButton>
               <Help sx={{ fontSize: "25px" }} />
